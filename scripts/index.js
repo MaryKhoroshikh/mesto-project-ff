@@ -27,9 +27,8 @@ function addCard(imageValue, titleValue, deleteCard) {
     placeElement.querySelector('.card__image').src = imageValue;
     placeElement.querySelector('.card__title').textContent = titleValue;
     // вешаем слушатель на кнопку удалить
-    deleteBtn = placeElement.querySelector('.card__delete-button');
-    deleteBtn.addEventListener('click', deleteCard);
-    // добавляем
+    placeElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
+    // добавляем карточку
     places.append(placeElement);
 }
 
