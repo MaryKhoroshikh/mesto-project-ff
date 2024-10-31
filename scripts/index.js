@@ -14,17 +14,16 @@ const placesSection = container.querySelector('.places');
 const placesContainer = placesSection.querySelector('.places__list');
 
 // функция создания
-function createCard(Value, deleteCard) {
+function createCard(cardData, deleteCard) {
     // параметры
-    const imageValue = Value[0];
-    const titleValue = Value[1];
+    const titleValue = cardData.name;
     // темплейт
     const placeTemplate = document.querySelector('#card-template').content;
     // клонируем
     const placeElement = placeTemplate.querySelector('.places__item').cloneNode(true);
     // наполняем
     const cardImage = placeElement.querySelector('.card__image');
-    cardImage.src = imageValue;
+    cardImage.src = cardData.link;
     cardImage.alt = titleValue;
     placeElement.querySelector('.card__title').textContent = titleValue;
     // вешаем слушатель на кнопку удалить
@@ -34,12 +33,11 @@ function createCard(Value, deleteCard) {
 }
 
 // функция удаления
-function deleteCard (elem) {
-    elem.target.closest('.places__item').remove();
+function deleteCard (event) {
+    event.target.closest('.places__item').remove();
 }
 
 //вывод карточек
 initialCards.forEach(function (elem) {
-    const values = [elem.link, elem.name];
-    placesContainer.append(createCard(values, deleteCard));
+    placesContainer.append(createCard(elem, deleteCard));
 });
