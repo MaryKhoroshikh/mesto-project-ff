@@ -15,10 +15,6 @@ const placesContainer = placesSection.querySelector('.places__list');
 
 // функция создания
 function createCard(Value, deleteCard) {
-    // функция удаления
-    function deleteCard (evn) {
-        evn.target.parentElement.remove();
-    }
     // параметры
     const imageValue = Value[0];
     const titleValue = Value[1];
@@ -38,14 +34,12 @@ function createCard(Value, deleteCard) {
 }
 
 // функция удаления
-function deleteCard (evn) {
-    evn.target.parentElement.remove();
+function deleteCard (elem) {
+    elem.target.closest('.places__item').remove();
 }
 
 //вывод карточек
 initialCards.forEach(function (elem) {
-    const link = elem.link;
-    const name = elem.name;
-    const values = [{link}, {name}];
-    placesContainer.append(createCard(values));
+    const values = [elem.link, elem.name];
+    placesContainer.append(createCard(values, deleteCard));
 });
