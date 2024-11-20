@@ -1,13 +1,9 @@
 // @todo: Темплейт карточки
-
 // @todo: DOM узлы
-
 // @todo: Функция создания карточки
-
 // @todo: Функция удаления карточки
-
 // @todo: Вывести карточки на страницу
-
+import { initialCards } from './cards.js'
 // 
 const container = document.querySelector('.content');
 const placesSection = container.querySelector('.places');
@@ -41,3 +37,5 @@ function deleteCard (event) {
 initialCards.forEach(function (elem) {
     placesContainer.append(createCard(elem, deleteCard));
 });
+
+import './pages/index.css';
