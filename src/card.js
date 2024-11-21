@@ -1,5 +1,7 @@
+import { openModal, closeModal } from './modal.js'
+
 // функция создания
-function createCard(cardData, deleteCard) {
+function createCard(cardData, deleteCard, likeCard, openImage) {
     // параметры
     const titleValue = cardData.name;
     // темплейт
@@ -13,6 +15,10 @@ function createCard(cardData, deleteCard) {
     placeElement.querySelector('.card__title').textContent = titleValue;
     // вешаем слушатель на кнопку удалить
     placeElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
+    //вешаем слушатель на кнопку лайка карточки
+    placeElement.querySelector('.card__like-button').addEventListener('click', likeCard);
+    //вешаем слушатель на изображение карточки
+    cardImage.addEventListener('click', openImage);
     // возвращаем карточку
     return placeElement;
 }
@@ -22,4 +28,19 @@ function deleteCard (event) {
     event.target.closest('.places__item').remove();
 }
 
-export { createCard, deleteCard }
+//функция лайка
+function likeCard (event) {
+    event.target.classList.toggle('card__like-button_is-active');
+}
+
+//функция просмотра изображения
+function openImage (event) {
+    const modalImage = document.querySelector('.popup_type_image');
+    openModal(modalImage);
+    const image = modalImage.querySelector('.popup__image');
+    const caption = modalImage.querySelector('.popup__caption');
+    image.src = event.target.src;
+    caption.textContent = event.target.alt;
+}
+
+export { createCard, deleteCard, likeCard, openImage }

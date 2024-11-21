@@ -4,7 +4,8 @@
 // @todo: Функция удаления карточки
 // @todo: Вывести карточки на страницу
 import { initialCards } from './cards.js'
-import { createCard, deleteCard } from './card.js'
+import { createCard, deleteCard, likeCard, openImage } from './card.js'
+import { openModal, closeModal } from './modal.js'
 import './pages/index.css'
 // 
 const container = document.querySelector('.content');
@@ -14,7 +15,7 @@ const placesContainer = placesSection.querySelector('.places__list');
 
 //вывод карточек
 initialCards.forEach(function (elem) {
-    placesContainer.append(createCard(elem, deleteCard));
+    placesContainer.append(createCard(elem, deleteCard, likeCard, openImage));
 });
 
 //спринт 6
@@ -24,39 +25,14 @@ initialCards.forEach(function (elem) {
 const buttonEditProfile = profileSection.querySelector('.profile__edit-button');
 const modalEditProfile = document.querySelector('.popup_type_edit');
 
-// функция открытия модального окна
-function openModal (popup) {
-    popup.classList.add('popup_is-opened');
-
-    const exit = popup.querySelector('.popup__close');
-    const innerPopup = popup.querySelector('.popup__content');
-    
-    exit.addEventListener('click', () => closeModal(popup));
-    
-    innerPopup.addEventListener('click', (evt) => evt.stopPropagation());
-    popup.addEventListener('click', () => closeModal(popup));
-
-    document.addEventListener('keydown', function (evt) {
-        if (evt.code === "Escape") {
-            closeModal(popup);
-        }
-    });
-}
-
-// функция закрытия модального окна
-function closeModal(popup) {
-    popup.classList.remove('popup_is-opened');
-    //удаление слушателей не сделано!
-}
-
 buttonEditProfile.addEventListener('click', () => openModal(modalEditProfile));
 
 // работа с модальным окном редактирования профиля
 // Находим форму в DOM
-const formElement = modalEditProfile.querySelector('.popup__form');
+const formElement = document.forms.edit_profile;
 // Находим поля формы в DOM
-const nameInput = formElement.querySelector('.popup__input_type_name');
-const jobInput = formElement.querySelector('.popup__input_type_description');
+const nameInput = formElement.elements.name;
+const jobInput = formElement.elements.description;
 //находим значения установленные в профиле и записываем их в поля формы
 const profileTitle = profileSection.querySelector('.profile__title');
 const profileDescription = profileSection.querySelector('.profile__description');
@@ -80,3 +56,29 @@ function handleFormSubmit(evt) {
 // он будет следить за событием “submit” - «отправка»
 formElement.addEventListener('submit', handleFormSubmit);
 
+//добавление карточки
+//открытие модального окна добавления карточки
+const buttonAddCard = profileSection.querySelector('.profile__add-button');
+const modalAddCard = document.querySelector('.popup_type_new-card');
+
+buttonAddCard.addEventListener('click', () => openModal(modalAddCard));
+
+const formAddCard = document.forms.new_place;
+// Находим поля формы в DOM
+const place_nameInput = formAddCard.elements.place_name;
+const linkInput = formAddCard.elements.link;
+
+function addCardFormSubmit(evt) {
+    evt.preventDefault();
+    // Получите значение полей jobInput и nameInput из свойства value
+    const place = place_nameInput.value;
+    const link = linkInput.value;
+    const elem = {name: place, link: link}
+    placesContainer.prepend(createCard(elem, deleteCard));
+
+    modalAddCard.classList.remove('popup_is-opened');
+    place_nameInput.value = '';
+    linkInput.value = '';
+}
+
+formAddCard.addEventListener('submit', addCardFormSubmit);
