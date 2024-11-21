@@ -1,6 +1,6 @@
 // функция открытия модального окна
 function openModal (popup) {
-    popup.classList.add('popup_is-opened');
+    popup.classList.add('popup_is-opened', 'popup_is-animated');
 
     const exit = popup.querySelector('.popup__close');
     const innerPopup = popup.querySelector('.popup__content');
