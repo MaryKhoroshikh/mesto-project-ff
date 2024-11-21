@@ -5,22 +5,26 @@ function openModal (popup) {
     const exit = popup.querySelector('.popup__close');
     const innerPopup = popup.querySelector('.popup__content');
     
-    exit.addEventListener('click', () => closeModal(popup));
+    exit.addEventListener('click', closeModal);
     
-    innerPopup.addEventListener('click', (evt) => evt.stopPropagation());
-    popup.addEventListener('click', () => closeModal(popup));
+    innerPopup.addEventListener('click', (event) => event.stopPropagation());
+    popup.addEventListener('click', closeModal);
 
-    document.addEventListener('keydown', function (evt) {
-        if (evt.code === "Escape") {
-            closeModal(popup);
+    document.addEventListener('keydown', escapeModal);
+
+    function escapeModal(event) {
+        if (event.code === "Escape") {
+            popup.classList.remove('popup_is-opened');
+            document.removeEventListener('keydown', escapeModal);
         }
-    });
+    }
 }
 
 // функция закрытия модального окна
-function closeModal(popup) {
-    popup.classList.remove('popup_is-opened');
-    //удаление слушателей не сделано!
+function closeModal(event) {
+    event.target.closest('.popup').classList.remove('popup_is-opened');
+    event.target.closest('.popup').removeEventListener('click', closeModal);
+    event.target.removeEventListener('click', closeModal);
 }
 
-export { openModal, closeModal }
+export { openModal, closeModal}
