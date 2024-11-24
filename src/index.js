@@ -20,29 +20,32 @@ initialCards.forEach(function (elem) {
 const buttonEditProfile = profileSection.querySelector('.profile__edit-button');
 const modalEditProfile = document.querySelector('.popup_type_edit');
 
-buttonEditProfile.addEventListener('click', () => openModal(modalEditProfile));
+buttonEditProfile.addEventListener('click', () => {
+    //записываем значения установленные в профиле в поля формы
+    nameInput.value = profileTitle.textContent;
+    jobInput.value = profileDescription.textContent;
+    openModal(modalEditProfile);
+});
 
 // работа с модальным окном редактирования профиля
-const formElement = document.forms.edit_profile;
-const nameInput = formElement.elements.name;
-const jobInput = formElement.elements.description;
-//находим значения установленные в профиле и записываем их в поля формы
+const formEditProfile = document.forms.edit_profile;
+const nameInput = formEditProfile.elements.name;
+const jobInput = formEditProfile.elements.description;
+//находим значения установленные в профиле
 const profileTitle = profileSection.querySelector('.profile__title');
 const profileDescription = profileSection.querySelector('.profile__description');
-nameInput.value = profileTitle.textContent;
-jobInput.value = profileDescription.textContent;
 
-function handleFormSubmit(evt) {
-    evt.preventDefault();
+function editProfileFormSubmit(event) {
+    event.preventDefault();
     const job = jobInput.value;
     const name = nameInput.value;
     profileTitle.textContent = name;
     profileDescription.textContent = job;
 
-    modalEditProfile.classList.remove('popup_is-opened');
+    closeModal(modalEditProfile);
 }
 
-formElement.addEventListener('submit', handleFormSubmit);
+formEditProfile.addEventListener('submit', editProfileFormSubmit);
 
 //открытие модального окна добавления карточки
 const buttonAddCard = profileSection.querySelector('.profile__add-button');
@@ -54,15 +57,15 @@ const formAddCard = document.forms.new_place;
 const place_nameInput = formAddCard.elements.place_name;
 const linkInput = formAddCard.elements.link;
 
-function addCardFormSubmit(evt) {
-    evt.preventDefault();
+function addCardFormSubmit(event) {
+    event.preventDefault();
     
     const place = place_nameInput.value;
     const link = linkInput.value;
     const elem = {name: place, link: link}
     placesContainer.prepend(createCard(elem, deleteCard, likeCard, openImage));
 
-    modalAddCard.classList.remove('popup_is-opened');
+    closeModal(modalAddCard);
     place_nameInput.value = '';
     linkInput.value = '';
 }
