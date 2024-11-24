@@ -30,14 +30,5 @@ function deleteCard (event) {
 function likeCard (event) {
     event.target.classList.toggle('card__like-button_is-active');
 }
-//функция просмотра изображения
-function openImage (event) {
-    const modalImage = document.querySelector('.popup_type_image');
-    const image = modalImage.querySelector('.popup__image');
-    const caption = modalImage.querySelector('.popup__caption');
-    image.src = event.target.src;
-    caption.textContent = event.target.alt;
-    openModal(modalImage);
-}
 
-export { createCard, deleteCard, likeCard, openImage }
+export { createCard, deleteCard, likeCard }
