@@ -1,7 +1,7 @@
 import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
-import './pages/index.css'
+import '../pages/index.css'
 
 const container = document.querySelector('.content');
 const placesSection = container.querySelector('.places');
