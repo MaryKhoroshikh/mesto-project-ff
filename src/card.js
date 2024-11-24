@@ -8,7 +8,7 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
     placeElement.querySelector('.card__title').textContent = titleValue;
     placeElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
     placeElement.querySelector('.card__like-button').addEventListener('click', likeCard);
-    cardImage.addEventListener('click', openImagePopup);
+    cardImage.addEventListener('click', () => openImagePopup(cardImage.src, cardImage.alt));
     return placeElement;
 }
 

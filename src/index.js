@@ -42,9 +42,9 @@ function addCardFormSubmit(event) {
     formAddCard.reset();
 }
 
-function openImagePopup (event) {
-    image.src = event.target.src;
-    caption.textContent = event.target.alt;
+function openImagePopup (src, alt) {
+    image.src = src;
+    caption.textContent = alt;
     openModal(modalImage);
 }
 
