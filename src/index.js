@@ -66,8 +66,7 @@ function addCardFormSubmit(event) {
     placesContainer.prepend(createCard(elem, deleteCard, likeCard, openImage));
 
     closeModal(modalAddCard);
-    place_nameInput.value = '';
-    linkInput.value = '';
+    formAddCard.reset();
 }
 
 formAddCard.addEventListener('submit', addCardFormSubmit);
