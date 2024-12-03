@@ -2,6 +2,7 @@ import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
+import { enableValidation } from './validation.js'
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
@@ -58,6 +59,8 @@ buttonEditProfile.addEventListener('click', () => {
     openModal(modalEditProfile);
 });
 buttonAddCard.addEventListener('click', () => openModal(modalAddCard));
+
+enableValidation();
 
 formAddCard.addEventListener('submit', handleAddCard);
 formEditProfile.addEventListener('submit', handleEditProfile);
