@@ -47,7 +47,7 @@
           required
           minlength="2" 
           maxlength="40"
-          pattern="[а-яА-Я\w\-\s]+"
+          pattern="[а-яА-Яa-zA-Zё\-\s]+"
         >
         <span class="popup__input-error name-input-error"></span>
         </label>
@@ -61,6 +61,7 @@
           required 
           minlength="2" 
           maxlength="200"
+          pattern="[а-яА-Яa-zA-Zё\-\s]+"
         >
         <span class="popup__input-error description-input-error"></span>
         </label>
@@ -80,6 +81,7 @@
           class="popup__input popup__input_type_card-name" 
           placeholder="Название" 
           required
+          pattern="[а-яА-Яa-zA-Zё\-\s]+"
         >
         <span class="popup__input-error place_name-input-error" ></span>
         <input 
