@@ -64,4 +64,8 @@ const enableValidation = () => {
     });
 }
 
+const clearValidation = () => {
+  
+}
+
 export { enableValidation }
