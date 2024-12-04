@@ -11,7 +11,7 @@
 }
 
 .popup__input:last-of-type {
-  margin-bottom: 0;
+  margin-bottom: 10px;
 }
 
 @media screen and (max-width: 568px) {
@@ -28,7 +28,7 @@
 .popup__input-error {
   color: #ff0000;
   font-size: 12px;
-  line-height: 1.2;
+  line-height: 1;
   position: absolute;
   width: 358px;
   margin-top: -3px;
