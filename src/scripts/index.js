@@ -75,6 +75,7 @@ buttonAddCard.addEventListener('click', () => {
         inputErrorClass: 'popup__input_type_error',
         errorClass: 'popup__input-error_active'
     });
+    formAddCard.reset();
     openModal(modalAddCard);
 });
 
