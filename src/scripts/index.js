@@ -63,10 +63,20 @@ buttonEditProfile.addEventListener('click', () => {
         inactiveButtonClass: 'popup__button_inactive',
         inputErrorClass: 'popup__input_type_error',
         errorClass: 'popup__input-error_active'
-      });
+    });
     openModal(modalEditProfile);
 });
-buttonAddCard.addEventListener('click', () => openModal(modalAddCard));
+buttonAddCard.addEventListener('click', () => {
+    clearValidation(formAddCard, {
+        formSelector: '.popup__form',
+        inputSelector: '.popup__input',
+        submitButtonSelector: '.popup__button',
+        inactiveButtonClass: 'popup__button_inactive',
+        inputErrorClass: 'popup__input_type_error',
+        errorClass: 'popup__input-error_active'
+    });
+    openModal(modalAddCard);
+});
 
 enableValidation({
     formSelector: '.popup__form',
@@ -75,7 +85,7 @@ enableValidation({
     inactiveButtonClass: 'popup__button_inactive',
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__input-error_active'
-  });
+});
 
 formAddCard.addEventListener('submit', handleAddCard);
 formEditProfile.addEventListener('submit', handleEditProfile);
