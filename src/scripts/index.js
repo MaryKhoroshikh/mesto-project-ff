@@ -2,7 +2,7 @@ import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
-import { enableValidation } from './validation.js'
+import { enableValidation, clearValidation } from './validation.js'
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
@@ -56,6 +56,14 @@ initialCards.forEach(function (elem) {
 buttonEditProfile.addEventListener('click', () => {
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
+    clearValidation(formEditProfile, {
+        formSelector: '.popup__form',
+        inputSelector: '.popup__input',
+        submitButtonSelector: '.popup__button',
+        inactiveButtonClass: 'popup__button_inactive',
+        inputErrorClass: 'popup__input_type_error',
+        errorClass: 'popup__input-error_active'
+      });
     openModal(modalEditProfile);
 });
 buttonAddCard.addEventListener('click', () => openModal(modalAddCard));

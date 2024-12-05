@@ -58,7 +58,6 @@ const setEventListeners = (formElement) => {
     inputElement.addEventListener('input', function () {
       checkInputValidity(formElement, inputElement);
       toggleButtonState(inputList, buttonElement);
-      //console.log('done check');
     });
   });
 };
@@ -73,8 +72,12 @@ const enableValidation = (validationConfig) => {
     });
 }
 
-const clearValidation = () => {
-  
+const clearValidation = (formElement, validationConfig) => {
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
+  buttonElement.disabled = true;
+  buttonElement.classList.add(validationConfig.inactiveButtonClass);
+  inputList.forEach((inputElement) => hideInputError(formElement, inputElement));
 }
 
-export { enableValidation }
+export { enableValidation, clearValidation }
