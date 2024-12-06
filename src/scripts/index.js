@@ -98,36 +98,40 @@ modalAddCard.addEventListener('click', closeWithOverlay);
 modalEditProfile.addEventListener('click', closeWithOverlay);
 
 //запросы
-fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
+const promisePfofile = fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
     method: 'GET',
     headers: {
       authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
     }
-  })
-    .then(res => res.json())
-    .then((result) => {
-        profileTitle.textContent = result.name;
-        profileDescription.textContent = result.about;
-        profileImage.style.backgroundImage = `url("${result.avatar}")`;
-    })
-    .catch((err) => console.log(`Ошибка: ${err}`));
+  });
 
-fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
+const promiseCards = fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
     method: 'GET',
     headers: {
       authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
     }
-  })
-    .then((res) => {
+  });
+
+Promise.all([promisePfofile, promiseCards]).then(() => {
+    promisePfofile.then(res => res.json())
+        .then((result) => {
+            //console.log(result._id);
+            profileTitle.textContent = result.name;
+            profileDescription.textContent = result.about;
+            profileImage.style.backgroundImage = `url("${result.avatar}")`;
+        })
+        .catch((err) => console.log(`Ошибка: ${err}`));
+
+    promiseCards.then((res) => {
         if (res.ok) {
             return res.json();
         }
             return Promise.reject(res.status);
-    })
-    .then((array) => {
-        console.log(array);
-        array.forEach(function (elem) { 
-            placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup));
-        });
-    })
-    .catch((err) => console.log(`Произошла ошибка: ${err}`));
+        })
+        .then((array) => {
+            array.forEach(function (elem) { 
+                placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup));
+            });
+        })
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+});
