@@ -11,6 +11,7 @@ const placesContainer = sectionPlaces.querySelector('.places__list');
 const sectionProfile= container.querySelector('.profile');
 const profileTitle = sectionProfile.querySelector('.profile__title');
 const profileDescription = sectionProfile.querySelector('.profile__description');
+const profileImage = sectionProfile.querySelector('.profile__image');
 const buttonAddCard = sectionProfile.querySelector('.profile__add-button');
 const buttonEditProfile = sectionProfile.querySelector('.profile__edit-button');
 
@@ -97,3 +98,18 @@ modalEditProfile.querySelector('.popup__close').addEventListener('click', () => 
 modalBigImage.addEventListener('click', closeWithOverlay);
 modalAddCard.addEventListener('click', closeWithOverlay);
 modalEditProfile.addEventListener('click', closeWithOverlay);
+
+//запросы
+fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
+    method: 'GET',
+    headers: {
+      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
+    }
+  })
+    .then(res => res.json())
+    .then((result) => {
+        profileTitle.textContent = result.name;
+        profileDescription.textContent = result.about;
+        profileImage.style.backgroundImage = `url("${result.avatar}")`;
+    })
+    .catch((err) => console.log(`Ошибка: ${err}`));
