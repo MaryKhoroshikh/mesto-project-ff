@@ -102,6 +102,23 @@
     </div>
   </div>
 </div>
+<div class="popup popup_type_avatar">
+  <div class="popup__content">
+    <button type="button" class="popup__close"></button>
+    <h3 class="popup__title">Обновить аватар</h3>
+    <form class="popup__form" name="edit_avatar" novalidate>
+      <input 
+          type="url" 
+          id="avatar-input" 
+          name="avatar" 
+          class="popup__input popup__input_type_avatar" 
+          placeholder="https://somewebsite.com/someimage.jpg" 
+          required>
+      <span class="popup__input-error avatar-input-error"></span>
+      <button type="submit" class="button popup__button">Сохранить</button>
+    </form>
+  </div>
+</div>
 
 <template id="card-template">
   <li class="places__item card">
