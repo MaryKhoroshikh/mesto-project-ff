@@ -36,6 +36,17 @@ function handleEditProfile(event) {
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
     closeModal(modalEditProfile);
+    fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
+        method: 'PATCH',
+        headers: {
+          authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: nameInput.value,
+          about: jobInput.value
+        })
+      });
 }
 
 function handleAddCard(event) {
@@ -58,7 +69,7 @@ function postCard(newCard) {
         method: 'POST',
         headers: {
           authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
-          "content-Type": "application/json"
+          'content-Type': 'application/json'
         },
         body: JSON.stringify({
             name: newCard.name,

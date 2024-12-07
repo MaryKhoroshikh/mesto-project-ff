@@ -7,7 +7,6 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
     cardImage.src = cardData.link;
     cardImage.alt = titleValue;
     //check card
-    //console.log(cardData);
     if (cardData.owner) { if (!(cardData.owner._id === '51e16379f74f19a5d50fc63e')) {cardDeleteButton.remove();}}
     placeElement.querySelector('.card__title').textContent = titleValue;
     cardDeleteButton.addEventListener('click', (event) => {
