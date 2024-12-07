@@ -7,6 +7,19 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  position: relative;
+}
+
+.profile__image:hover::after {
+  content: '';
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  background-image: url("../../../images/edit-icon.svg");
+  background-size: 26px 26px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgb(0, 0, 0, 0.8);
 }
 
 @media screen and (max-width: 740px) {
