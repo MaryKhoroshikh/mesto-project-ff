@@ -42,12 +42,27 @@ function handleAddCard(event) {
     placesContainer.prepend(createCard(elem, deleteCard, likeCard, openImagePopup));
     closeModal(modalAddCard);
     formAddCard.reset();
+    postCard(elem);
 }
 
 function openImagePopup (src, alt) {
     imgContainerModalBigImage.src = src;
     imgCaptionModalBigImage.textContent = alt;
     openModal(modalBigImage);
+}
+
+function postCard(newCard) {
+    fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
+        method: 'POST',
+        headers: {
+          authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
+          "content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: newCard.name,
+            link: newCard.link
+        })
+    });
 }
 
 //initialCards.forEach(function (elem) { placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup)); });
