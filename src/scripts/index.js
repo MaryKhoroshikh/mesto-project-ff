@@ -22,6 +22,10 @@ const imgContainerModalBigImage = modalBigImage.querySelector('.popup__image');
 const imgCaptionModalBigImage = modalBigImage.querySelector('.popup__caption');
 const modalAddCard = document.querySelector('.popup_type_new-card');
 const modalEditProfile = document.querySelector('.popup_type_edit');
+const modalEditAvatar = document.querySelector('.popup_type_avatar');
+
+const formEditAvatar = document.forms.edit_avatar;
+const avatarInput = formEditAvatar.elements.avatar;
 
 const formEditProfile = document.forms.edit_profile;
 const nameInput = formEditProfile.elements.name;
@@ -142,16 +146,31 @@ buttonAddCard.addEventListener('click', () => {
     formAddCard.reset();
     openModal(modalAddCard);
 });
+profileImage.addEventListener('click', () => {
+    clearValidation(formEditAvatar, {
+        formSelector: '.popup__form',
+        inputSelector: '.popup__input',
+        submitButtonSelector: '.popup__button',
+        inactiveButtonClass: 'popup__button_inactive',
+        inputErrorClass: 'popup__input_type_error',
+        errorClass: 'popup__input-error_active'
+    });
+    formEditAvatar.reset();
+    openModal(modalEditAvatar);
+});
 
 formAddCard.addEventListener('submit', handleAddCard);
 formEditProfile.addEventListener('submit', handleEditProfile);
+//formEditAvatar.addEventListener('submit', handleEditAvatar);
 
 modalBigImage.querySelector('.popup__close').addEventListener('click', () => closeModal(modalBigImage));
 modalAddCard.querySelector('.popup__close').addEventListener('click', () => closeModal(modalAddCard));
 modalEditProfile.querySelector('.popup__close').addEventListener('click', () => closeModal(modalEditProfile));
+modalEditAvatar.querySelector('.popup__close').addEventListener('click', () => closeModal(modalEditAvatar));
 modalBigImage.addEventListener('click', closeWithOverlay);
 modalAddCard.addEventListener('click', closeWithOverlay);
 modalEditProfile.addEventListener('click', closeWithOverlay);
+modalEditAvatar.addEventListener('click', closeWithOverlay);
 
 //валидация форм
 enableValidation({
