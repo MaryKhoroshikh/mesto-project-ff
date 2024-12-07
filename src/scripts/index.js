@@ -4,6 +4,8 @@ import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
 import { enableValidation, clearValidation } from './validation.js'
 
+const ownerID = "51e16379f74f19a5d50fc63e";
+
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
 const placesContainer = sectionPlaces.querySelector('.places__list');
@@ -37,7 +39,7 @@ function handleEditProfile(event) {
 }
 
 function handleAddCard(event) {
-    const elem = {name: place_nameInput.value, link: linkInput.value};
+    const elem = {name: place_nameInput.value, link: linkInput.value, owner: { _id: ownerID}};
     event.preventDefault();
     placesContainer.prepend(createCard(elem, deleteCard, likeCard, openImagePopup));
     closeModal(modalAddCard);
@@ -65,8 +67,45 @@ function postCard(newCard) {
     });
 }
 
-//initialCards.forEach(function (elem) { placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup)); });
+//запросы
+const promisePfofile = fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
+    method: 'GET',
+    headers: {
+      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
+    }
+  });
 
+const promiseCards = fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
+    method: 'GET',
+    headers: {
+      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
+    }
+  });
+
+Promise.all([promisePfofile, promiseCards]).then(() => {
+    promisePfofile.then(res => res.json())
+        .then((result) => {
+            profileTitle.textContent = result.name;
+            profileDescription.textContent = result.about;
+            profileImage.style.backgroundImage = `url("${result.avatar}")`;
+        })
+        .catch((err) => console.log(`Ошибка: ${err}`));
+
+    promiseCards.then((res) => {
+        if (res.ok) {
+            return res.json();
+        }
+            return Promise.reject(res.status);
+        })
+        .then((array) => {
+            array.forEach(function (elem) { 
+                placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup));
+            });
+        })
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+});
+
+//слушатели
 buttonEditProfile.addEventListener('click', () => {
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
@@ -93,15 +132,6 @@ buttonAddCard.addEventListener('click', () => {
     openModal(modalAddCard);
 });
 
-enableValidation({
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_inactive',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__input-error_active'
-});
-
 formAddCard.addEventListener('submit', handleAddCard);
 formEditProfile.addEventListener('submit', handleEditProfile);
 
@@ -112,41 +142,12 @@ modalBigImage.addEventListener('click', closeWithOverlay);
 modalAddCard.addEventListener('click', closeWithOverlay);
 modalEditProfile.addEventListener('click', closeWithOverlay);
 
-//запросы
-const promisePfofile = fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
-    method: 'GET',
-    headers: {
-      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-    }
-  });
-
-const promiseCards = fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
-    method: 'GET',
-    headers: {
-      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-    }
-  });
-
-Promise.all([promisePfofile, promiseCards]).then(() => {
-    promisePfofile.then(res => res.json())
-        .then((result) => {
-            //console.log(result._id);
-            profileTitle.textContent = result.name;
-            profileDescription.textContent = result.about;
-            profileImage.style.backgroundImage = `url("${result.avatar}")`;
-        })
-        .catch((err) => console.log(`Ошибка: ${err}`));
-
-    promiseCards.then((res) => {
-        if (res.ok) {
-            return res.json();
-        }
-            return Promise.reject(res.status);
-        })
-        .then((array) => {
-            array.forEach(function (elem) { 
-                placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup));
-            });
-        })
-        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+//валидация форм
+enableValidation({
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_inactive',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__input-error_active'
 });
