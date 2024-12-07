@@ -62,6 +62,22 @@ function handleAddCard(event) {
     postCard(elem);
 }
 
+function handleEditAvatar(event) {
+    event.preventDefault();
+    profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
+    closeModal(modalEditAvatar);
+    fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me/avatar', {
+        method: 'PATCH',
+        headers: {
+          authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            avatar: avatarInput.value,
+        })
+      });
+}
+
 function openImagePopup (src, alt) {
     imgContainerModalBigImage.src = src;
     imgCaptionModalBigImage.textContent = alt;
@@ -161,7 +177,7 @@ profileImage.addEventListener('click', () => {
 
 formAddCard.addEventListener('submit', handleAddCard);
 formEditProfile.addEventListener('submit', handleEditProfile);
-//formEditAvatar.addEventListener('submit', handleEditAvatar);
+formEditAvatar.addEventListener('submit', handleEditAvatar);
 
 modalBigImage.querySelector('.popup__close').addEventListener('click', () => closeModal(modalBigImage));
 modalAddCard.querySelector('.popup__close').addEventListener('click', () => closeModal(modalAddCard));
