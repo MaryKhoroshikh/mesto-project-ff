@@ -1,10 +1,9 @@
-import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
 import { enableValidation, clearValidation } from './validation.js'
 
-const ownerID = "51e16379f74f19a5d50fc63e";
+export const ownerID = "51e16379f74f19a5d50fc63e";
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
