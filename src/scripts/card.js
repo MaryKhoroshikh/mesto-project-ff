@@ -3,6 +3,8 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
     const placeElement = placeTemplate.querySelector('.places__item').cloneNode(true);
     const cardImage = placeElement.querySelector('.card__image');
     const cardDeleteButton = placeElement.querySelector('.card__delete-button');
+    const cardLikesNumber = placeElement.querySelector('.card__number-of-likes');
+    cardLikesNumber.textContent = cardData.likes.length;
     const titleValue = cardData.name;
     cardImage.src = cardData.link;
     cardImage.alt = titleValue;
@@ -18,7 +20,9 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
             }
         });
     });
-    placeElement.querySelector('.card__like-button').addEventListener('click', likeCard);
+    placeElement.querySelector('.card__like-button').addEventListener('click', (event) => {
+        likeCard(event);
+    });
     cardImage.addEventListener('click', () => openImagePopup(cardImage.src, cardImage.alt));
     return placeElement;
 }

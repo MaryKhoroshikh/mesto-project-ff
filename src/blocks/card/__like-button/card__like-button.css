@@ -7,24 +7,27 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  margin: -10px 0 0 0;
+  margin: 0;
   -webkit-transition: 0.3s;
   -moz-transition: 0.3s;
   -ms-transition: 0.3s;
   -o-transition: 0.3s;
   transition: 0.3s;
-  position: relative;
 }
 
-.card__like-button::after {
-  content: '';
+.card__likes {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+}
+
+.card__number-of-likes {
   max-width: 22px;
   font-size: 13px;
   line-height: 1.2;
   margin: 0;
   text-align: center;
-  inset: 20px 0 0 0;
-  position: absolute;
 }
 
 .card__like-button:hover {
