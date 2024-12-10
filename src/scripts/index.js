@@ -1,8 +1,8 @@
 import { createCard, deleteCard, likeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
-import { enableValidation, clearValidation } from './validation.js'
-import { getInitialCards, getProfile } from './api.js'
+import { enableValidation, clearValidation, validationConfig } from './validation.js'
+import { getInitialCards, getProfile, postCard } from './api.js'
 
 
 export const ownerID = "51e16379f74f19a5d50fc63e";
@@ -57,7 +57,7 @@ function handleEditProfile(event) {
 function handleAddCard(event) {
     const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
     event.preventDefault();
-    postCard(elem);
+    sendCard(elem);
     closeModal(modalAddCard);
     formAddCard.reset();
 }
@@ -84,45 +84,15 @@ function openImagePopup (src, alt) {
     openModal(modalBigImage);
 }
 
-function postCard(newCard) {
-    fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
-        method: 'POST',
-        headers: {
-          authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
-          'content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: newCard.name,
-            link: newCard.link
-        })
-    }).then((res)=>{
-        if (res.ok) {
-            return res.json();
-        } else {
-            return Promise.reject(res.status);
-        }
-    }).then((res)=>{
-        placesContainer.prepend(createCard(res, deleteCard, likeCard, openImagePopup));
-    });
+function sendCard(newCard) {
+    postCard(newCard)
+        .then((res) => {
+            placesContainer.prepend(createCard(res, deleteCard, likeCard, openImagePopup));
+        });
 }
 
-//запросы
-const promisePfofile = fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
-    method: 'GET',
-    headers: {
-      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-    }
-  });
-
-const promiseCards = fetch('https://nomoreparties.co/v1/wff-cohort-28/cards', {
-    method: 'GET',
-    headers: {
-      authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-    }
-  });
-
-Promise.all([promisePfofile, promiseCards]).then(() => {
-    promisePfofile.then(res => res.json())
+Promise.all([getInitialCards, getProfile]).then(() => {
+    getProfile()
         .then((result) => {
             profileTitle.textContent = result.name;
             profileDescription.textContent = result.about;
@@ -130,12 +100,7 @@ Promise.all([promisePfofile, promiseCards]).then(() => {
         })
         .catch((err) => console.log(`Ошибка: ${err}`));
 
-    promiseCards.then((res) => {
-        if (res.ok) {
-            return res.json();
-        }
-            return Promise.reject(res.status);
-        })
+    getInitialCards()
         .then((array) => {
             array.forEach(function (elem) { 
                 placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup));
@@ -146,39 +111,18 @@ Promise.all([promisePfofile, promiseCards]).then(() => {
 
 //слушатели
 buttonEditProfile.addEventListener('click', () => {
+    clearValidation(formEditProfile, validationConfig);
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
-    clearValidation(formEditProfile, {
-        formSelector: '.popup__form',
-        inputSelector: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button_inactive',
-        inputErrorClass: 'popup__input_type_error',
-        errorClass: 'popup__input-error_active'
-    });
     openModal(modalEditProfile);
 });
 buttonAddCard.addEventListener('click', () => {
-    clearValidation(formAddCard, {
-        formSelector: '.popup__form',
-        inputSelector: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button_inactive',
-        inputErrorClass: 'popup__input_type_error',
-        errorClass: 'popup__input-error_active'
-    });
+    clearValidation(formAddCard, validationConfig);
     formAddCard.reset();
     openModal(modalAddCard);
 });
 profileImage.addEventListener('click', () => {
-    clearValidation(formEditAvatar, {
-        formSelector: '.popup__form',
-        inputSelector: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button_inactive',
-        inputErrorClass: 'popup__input_type_error',
-        errorClass: 'popup__input-error_active'
-    });
+    clearValidation(formEditAvatar, validationConfig);
     formEditAvatar.reset();
     openModal(modalEditAvatar);
 });
@@ -197,11 +141,4 @@ modalEditProfile.addEventListener('click', closeWithOverlay);
 modalEditAvatar.addEventListener('click', closeWithOverlay);
 
 //валидация форм
-enableValidation({
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_inactive',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__input-error_active'
-});
+enableValidation(validationConfig);

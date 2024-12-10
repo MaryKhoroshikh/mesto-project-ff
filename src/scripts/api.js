@@ -30,4 +30,20 @@ const getProfile = () => {
       });
 }
 
-export { getInitialCards, getProfile }
+const postCard = (newCard) => {
+    return fetch(`${config.baseUrl}/cards`, {
+        method: 'POST',
+        headers: config.headers,
+        body: JSON.stringify({
+            name: newCard.name,
+            link: newCard.link
+        })
+    }).then((res) => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+    });
+}
+
+export { getInitialCards, getProfile, postCard }

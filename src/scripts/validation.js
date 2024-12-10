@@ -80,4 +80,4 @@ const clearValidation = (formElement, validationConfig) => {
   inputList.forEach((inputElement) => hideInputError(formElement, inputElement));
 }
 
-export { enableValidation, clearValidation }
+export { enableValidation, clearValidation, validationConfig }
