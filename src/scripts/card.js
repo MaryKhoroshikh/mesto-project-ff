@@ -8,7 +8,7 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
     const cardLikeButton = placeElement.querySelector('.card__like-button');
     const cardLikesNumber = placeElement.querySelector('.card__number-of-likes');
     const titleValue = cardData.name;
-    const hasMyLike = cardData.likes.some(function (elem) { return elem._id === ownerID});
+    const hasMyLike = cardData.likes.some((elem) => elem._id === ownerID);
     cardLikesNumber.textContent = cardData.likes.length;
     cardImage.src = cardData.link;
     cardImage.alt = titleValue;

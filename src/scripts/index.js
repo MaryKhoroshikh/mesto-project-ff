@@ -2,6 +2,8 @@ import { createCard, deleteCard, likeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
 import { enableValidation, clearValidation } from './validation.js'
+import { getInitialCards, getProfile } from './api.js'
+
 
 export const ownerID = "51e16379f74f19a5d50fc63e";
 
@@ -53,12 +55,11 @@ function handleEditProfile(event) {
 }
 
 function handleAddCard(event) {
-    const elem = {name: place_nameInput.value, link: linkInput.value, owner: { _id: ownerID}};
+    const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
     event.preventDefault();
-    placesContainer.prepend(createCard(elem, deleteCard, likeCard, openImagePopup));
+    postCard(elem);
     closeModal(modalAddCard);
     formAddCard.reset();
-    postCard(elem);
 }
 
 function handleEditAvatar(event) {
@@ -94,6 +95,14 @@ function postCard(newCard) {
             name: newCard.name,
             link: newCard.link
         })
+    }).then((res)=>{
+        if (res.ok) {
+            return res.json();
+        } else {
+            return Promise.reject(res.status);
+        }
+    }).then((res)=>{
+        placesContainer.prepend(createCard(res, deleteCard, likeCard, openImagePopup));
     });
 }
 
