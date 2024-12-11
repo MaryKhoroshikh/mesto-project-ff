@@ -2,7 +2,7 @@ import { createCard, deleteCard, toggleLikeCard, cardDataForDeletion, eventForDe
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
-import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard } from './api.js'
+import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, checkURL } from './api.js'
 
 
 export const ownerID = "51e16379f74f19a5d50fc63e";
@@ -68,6 +68,8 @@ function handleEditAvatar(event) {
     event.preventDefault();
     renderSaving(true, formEditAvatar);
     profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
+    //проверим ссылку 
+    //checkURL(avatarInput.value).catch((err) => console.log(`Произошла ошибка: ${err}`));
     patchAvatar(avatarInput)
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => renderSaving(false, formEditAvatar));
