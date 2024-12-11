@@ -1,8 +1,8 @@
-import { createCard, deleteCard, likeCard} from './card.js'
+import { createCard, deleteCard, toggleLikeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
-import { getInitialCards, getProfile, postCard } from './api.js'
+import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar } from './api.js'
 
 
 export const ownerID = "51e16379f74f19a5d50fc63e";
@@ -41,23 +41,18 @@ function handleEditProfile(event) {
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
     closeModal(modalEditProfile);
-    fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me', {
-        method: 'PATCH',
-        headers: {
-          authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: nameInput.value,
-          about: jobInput.value
-        })
-      });
+    patchProfile(nameInput,jobInput)
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
 }
 
 function handleAddCard(event) {
     const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
     event.preventDefault();
-    sendCard(elem);
+    postCard(elem)
+        .then((res) => {
+            placesContainer.prepend(createCard(res, deleteCard, toggleLikeCard, openImagePopup));
+        })
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
     closeModal(modalAddCard);
     formAddCard.reset();
 }
@@ -66,29 +61,14 @@ function handleEditAvatar(event) {
     event.preventDefault();
     profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
     closeModal(modalEditAvatar);
-    fetch('https://nomoreparties.co/v1/wff-cohort-28/users/me/avatar', {
-        method: 'PATCH',
-        headers: {
-          authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            avatar: avatarInput.value,
-        })
-      });
+    patchAvatar(avatarInput)
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
 }
 
 function openImagePopup (src, alt) {
     imgContainerModalBigImage.src = src;
     imgCaptionModalBigImage.textContent = alt;
     openModal(modalBigImage);
-}
-
-function sendCard(newCard) {
-    postCard(newCard)
-        .then((res) => {
-            placesContainer.prepend(createCard(res, deleteCard, likeCard, openImagePopup));
-        });
 }
 
 Promise.all([getInitialCards, getProfile]).then(() => {
@@ -98,12 +78,12 @@ Promise.all([getInitialCards, getProfile]).then(() => {
             profileDescription.textContent = result.about;
             profileImage.style.backgroundImage = `url("${result.avatar}")`;
         })
-        .catch((err) => console.log(`Ошибка: ${err}`));
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
 
     getInitialCards()
         .then((array) => {
             array.forEach(function (elem) { 
-                placesContainer.append(createCard(elem, deleteCard, likeCard, openImagePopup));
+                placesContainer.append(createCard(elem, deleteCard, toggleLikeCard, openImagePopup));
             });
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`));

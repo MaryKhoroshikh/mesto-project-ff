@@ -1,6 +1,8 @@
 import { ownerID } from './index.js'
+import { deleteFromServerCard, putLike, deleteLike } from './api.js'
 
-function createCard(cardData, deleteCard, likeCard, openImagePopup) {
+
+function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup) {
     const placeTemplate = document.querySelector('#card-template').content;
     const placeElement = placeTemplate.querySelector('.places__item').cloneNode(true);
     const cardImage = placeElement.querySelector('.card__image');
@@ -8,7 +10,7 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
     const cardLikeButton = placeElement.querySelector('.card__like-button');
     const cardLikesNumber = placeElement.querySelector('.card__number-of-likes');
     const titleValue = cardData.name;
-    const hasMyLike = cardData.likes.some((elem) => elem._id === ownerID);
+    let hasMyLike = cardData.likes.some((elem) => elem._id === ownerID);
     cardLikesNumber.textContent = cardData.likes.length;
     cardImage.src = cardData.link;
     cardImage.alt = titleValue;
@@ -24,29 +26,27 @@ function createCard(cardData, deleteCard, likeCard, openImagePopup) {
     
     cardDeleteButton.addEventListener('click', (event) => {
         deleteCard(event);
-        fetch(`https://nomoreparties.co/v1/wff-cohort-28/cards/${cardData._id}`, {
-            method: 'DELETE',
-            headers: {
-              authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-            }
-        });
+        deleteFromServerCard(cardData)
+            .catch((err) => console.log(`Произошла ошибка: ${err}`));
     });
     cardLikeButton.addEventListener('click', (event) => {
-        likeCard(event);
+        toggleLikeCard(event);
         if (!hasMyLike) {
-            fetch(`https://nomoreparties.co/v1/wff-cohort-28/cards/likes/${cardData._id}`, {
-                method: 'PUT',
-                headers: {
-                  authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-                }
-            }).then((res)=>res.json()).then((res)=>{cardLikesNumber.textContent = res.likes.length;});
+            putLike(cardData)
+                .then((res) => {
+                    cardLikesNumber.textContent = res.likes.length
+                    hasMyLike = true;
+                    console.log(`put like, hasMyLike = ${hasMyLike}`);
+                })
+                .catch((err) => console.log(`Произошла ошибка: ${err}`));
         } else {
-            fetch(`https://nomoreparties.co/v1/wff-cohort-28/cards/likes/${cardData._id}`, {
-                method: 'DELETE',
-                headers: {
-                  authorization: '78d3b3a3-1ec4-4d78-97c9-c99f9bcb0626'
-                }
-            }).then((res)=>res.json()).then((res)=>{cardLikesNumber.textContent = res.likes.length;});
+            deleteLike(cardData)
+                .then((res) => {
+                    cardLikesNumber.textContent = res.likes.length;
+                    hasMyLike = false;
+                    console.log(`delete like, hasMyLike = ${hasMyLike}`);
+                })
+                .catch((err) => console.log(`Произошла ошибка: ${err}`));
         }
     });
     cardImage.addEventListener('click', () => openImagePopup(cardImage.src, cardImage.alt));
@@ -58,8 +58,8 @@ function deleteCard (event) {
     event.target.closest('.places__item').remove();
 }
 
-function likeCard (event) {
+function toggleLikeCard (event) {
     event.target.classList.toggle('card__like-button_is-active');
 }
 
-export { createCard, deleteCard, likeCard }
+export { createCard, deleteCard, toggleLikeCard }

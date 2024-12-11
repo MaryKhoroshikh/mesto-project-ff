@@ -46,4 +46,76 @@ const postCard = (newCard) => {
     });
 }
 
-export { getInitialCards, getProfile, postCard }
+const patchProfile = (nameInput, jobInput) => {
+  return fetch(`${config.baseUrl}/users/me`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: nameInput.value,
+      about: jobInput.value
+    })
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+const patchAvatar = (avatarInput) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: avatarInput.value
+    })
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+const deleteFromServerCard = (cardData) => {
+  return fetch(`${config.baseUrl}/cards/${cardData._id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+const putLike = (cardData) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardData._id}`, {
+    method: 'PUT',
+    headers: config.headers,
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+const deleteLike = (cardData) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardData._id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+export { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, putLike, deleteLike }
