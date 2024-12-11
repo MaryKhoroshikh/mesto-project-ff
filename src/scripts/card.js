@@ -36,7 +36,6 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup) {
                 .then((res) => {
                     cardLikesNumber.textContent = res.likes.length
                     hasMyLike = true;
-                    console.log(`put like, hasMyLike = ${hasMyLike}`);
                 })
                 .catch((err) => console.log(`Произошла ошибка: ${err}`));
         } else {
@@ -44,7 +43,6 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup) {
                 .then((res) => {
                     cardLikesNumber.textContent = res.likes.length;
                     hasMyLike = false;
-                    console.log(`delete like, hasMyLike = ${hasMyLike}`);
                 })
                 .catch((err) => console.log(`Произошла ошибка: ${err}`));
         }
