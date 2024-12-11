@@ -56,7 +56,7 @@ function handleAddCard(event) {
     const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
     postCard(elem)
         .then((res) => {
-            placesContainer.prepend(createCard(res, deleteCard, toggleLikeCard, openImagePopup));
+            placesContainer.prepend(createCard(res, deleteCard, toggleLikeCard, openImagePopup, ownerID));
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => renderSaving(false, formAddCard));
@@ -113,7 +113,7 @@ Promise.all([getInitialCards, getProfile]).then(() => {
     getInitialCards()
         .then((array) => {
             array.forEach(function (elem) { 
-                placesContainer.append(createCard(elem, deleteCard, toggleLikeCard, openImagePopup));
+                placesContainer.append(createCard(elem, deleteCard, toggleLikeCard, openImagePopup, ownerID));
             });
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`));

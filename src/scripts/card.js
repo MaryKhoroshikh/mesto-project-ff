@@ -5,7 +5,7 @@ import { putLike, deleteLike } from './api.js'
 var cardDataForDeletion;
 var eventForDeletion;
 
-function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup) {
+function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerID) {
     const placeTemplate = document.querySelector('#card-template').content;
     const placeElement = placeTemplate.querySelector('.places__item').cloneNode(true);
     const cardImage = placeElement.querySelector('.card__image');
