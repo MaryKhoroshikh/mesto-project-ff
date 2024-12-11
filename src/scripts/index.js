@@ -38,31 +38,37 @@ const linkInput = formAddCard.elements.link;
 
 function handleEditProfile(event) {
     event.preventDefault();
+    renderSaving(true, formEditProfile);
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
-    closeModal(modalEditProfile);
     patchProfile(nameInput,jobInput)
-        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+        .catch((err) => console.log(`Произошла ошибка: ${err}`))
+        .finally(() => renderSaving(false, formEditProfile));
+    closeModal(modalEditProfile);
 }
 
 function handleAddCard(event) {
-    const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
     event.preventDefault();
+    renderSaving(true, formAddCard);
+    const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
     postCard(elem)
         .then((res) => {
             placesContainer.prepend(createCard(res, deleteCard, toggleLikeCard, openImagePopup));
         })
-        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+        .catch((err) => console.log(`Произошла ошибка: ${err}`))
+        .finally(() => renderSaving(false, formAddCard));
     closeModal(modalAddCard);
     formAddCard.reset();
 }
 
 function handleEditAvatar(event) {
     event.preventDefault();
+    renderSaving(true, formEditAvatar);
     profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
-    closeModal(modalEditAvatar);
     patchAvatar(avatarInput)
-        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+        .catch((err) => console.log(`Произошла ошибка: ${err}`))
+        .finally(() => renderSaving(false, formEditAvatar));
+    closeModal(modalEditAvatar);
 }
 
 function openImagePopup (src, alt) {
@@ -70,6 +76,14 @@ function openImagePopup (src, alt) {
     imgCaptionModalBigImage.textContent = alt;
     openModal(modalBigImage);
 }
+
+function renderSaving (isSaving, form) {
+    if (isSaving) {
+        form.querySelector('.popup__button').textContent = 'Сохранение...';
+    } else {
+        form.querySelector('.popup__button').textContent = 'Сохранить';
+    }
+  }
 
 Promise.all([getInitialCards, getProfile]).then(() => {
     getProfile()
@@ -88,6 +102,9 @@ Promise.all([getInitialCards, getProfile]).then(() => {
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`));
 });
+
+//валидация форм
+enableValidation(validationConfig);
 
 //слушатели
 buttonEditProfile.addEventListener('click', () => {
@@ -119,6 +136,3 @@ modalBigImage.addEventListener('click', closeWithOverlay);
 modalAddCard.addEventListener('click', closeWithOverlay);
 modalEditProfile.addEventListener('click', closeWithOverlay);
 modalEditAvatar.addEventListener('click', closeWithOverlay);
-
-//валидация форм
-enableValidation(validationConfig);
