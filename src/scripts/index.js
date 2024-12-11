@@ -1,8 +1,8 @@
-import { createCard, deleteCard, toggleLikeCard} from './card.js'
+import { createCard, deleteCard, toggleLikeCard, cardDataForDeletion, eventForDeletion} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import '../pages/index.css'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
-import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar } from './api.js'
+import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard } from './api.js'
 
 
 export const ownerID = "51e16379f74f19a5d50fc63e";
@@ -24,6 +24,9 @@ const imgCaptionModalBigImage = modalBigImage.querySelector('.popup__caption');
 const modalAddCard = document.querySelector('.popup_type_new-card');
 const modalEditProfile = document.querySelector('.popup_type_edit');
 const modalEditAvatar = document.querySelector('.popup_type_avatar');
+const modalConfirmDeletion = document.querySelector('.popup_type_confirm-deletion');
+
+const formConfirmDeletion = document.forms.confirm_deletion;
 
 const formEditAvatar = document.forms.edit_avatar;
 const avatarInput = formEditAvatar.elements.avatar;
@@ -69,6 +72,17 @@ function handleEditAvatar(event) {
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => renderSaving(false, formEditAvatar));
     closeModal(modalEditAvatar);
+}
+
+function handleConfirmDeletion(event) {
+    event.preventDefault();
+    renderSaving(true, formConfirmDeletion);
+    console.log('deletion');
+    deleteCard(eventForDeletion);
+    deleteFromServerCard(cardDataForDeletion)
+        .catch((err) => console.log(`Произошла ошибка: ${err}`))
+        .finally(() => renderSaving(false, formEditAvatar));
+    closeModal(modalConfirmDeletion);
 }
 
 function openImagePopup (src, alt) {
@@ -127,12 +141,15 @@ profileImage.addEventListener('click', () => {
 formAddCard.addEventListener('submit', handleAddCard);
 formEditProfile.addEventListener('submit', handleEditProfile);
 formEditAvatar.addEventListener('submit', handleEditAvatar);
+formConfirmDeletion.addEventListener('submit', handleConfirmDeletion);
 
 modalBigImage.querySelector('.popup__close').addEventListener('click', () => closeModal(modalBigImage));
 modalAddCard.querySelector('.popup__close').addEventListener('click', () => closeModal(modalAddCard));
 modalEditProfile.querySelector('.popup__close').addEventListener('click', () => closeModal(modalEditProfile));
 modalEditAvatar.querySelector('.popup__close').addEventListener('click', () => closeModal(modalEditAvatar));
+modalConfirmDeletion.querySelector('.popup__close').addEventListener('click', () => closeModal(modalConfirmDeletion));
 modalBigImage.addEventListener('click', closeWithOverlay);
 modalAddCard.addEventListener('click', closeWithOverlay);
 modalEditProfile.addEventListener('click', closeWithOverlay);
 modalEditAvatar.addEventListener('click', closeWithOverlay);
+modalConfirmDeletion.addEventListener('click', closeWithOverlay);

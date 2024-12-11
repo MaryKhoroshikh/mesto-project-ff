@@ -1,6 +1,9 @@
 import { ownerID } from './index.js'
-import { deleteFromServerCard, putLike, deleteLike } from './api.js'
+import { openModal } from './modal.js'
+import { putLike, deleteLike } from './api.js'
 
+var cardDataForDeletion;
+var eventForDeletion;
 
 function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup) {
     const placeTemplate = document.querySelector('#card-template').content;
@@ -25,9 +28,9 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup) {
     }
     
     cardDeleteButton.addEventListener('click', (event) => {
-        deleteCard(event);
-        deleteFromServerCard(cardData)
-            .catch((err) => console.log(`Произошла ошибка: ${err}`));
+        openModal(document.querySelector('.popup_type_confirm-deletion'));
+        cardDataForDeletion = cardData;
+        eventForDeletion = event;
     });
     cardLikeButton.addEventListener('click', (event) => {
         toggleLikeCard(event);
@@ -60,4 +63,4 @@ function toggleLikeCard (event) {
     event.target.classList.toggle('card__like-button_is-active');
 }
 
-export { createCard, deleteCard, toggleLikeCard }
+export { createCard, deleteCard, toggleLikeCard, cardDataForDeletion, eventForDeletion }
