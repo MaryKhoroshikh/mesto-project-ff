@@ -118,14 +118,4 @@ const deleteLike = (cardData) => {
     })
 }
 
-const checkURL = (link) => {
-  return fetch(`${link}`, {
-    method: 'HEAD',
-    mode: 'no-cors'
-  })
-    .then((res) => {
-      console.log(res);
-    })
-}
-
-export { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, putLike, deleteLike, checkURL }
+export { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, putLike, deleteLike }

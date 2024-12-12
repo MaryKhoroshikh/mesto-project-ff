@@ -1,4 +1,3 @@
-import { ownerID } from './index.js'
 import { openModal } from './modal.js'
 import { putLike, deleteLike } from './api.js'
 
@@ -18,7 +17,6 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
     cardImage.src = cardData.link;
     cardImage.alt = titleValue;
     placeElement.querySelector('.card__title').textContent = titleValue;
-
     //check card
     if (!(cardData.owner._id === ownerID)) {
         cardDeleteButton.remove();
@@ -26,17 +24,16 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
     if (hasMyLike) {
         cardLikeButton.classList.toggle('card__like-button_is-active');
     }
-    
     cardDeleteButton.addEventListener('click', (event) => {
         openModal(document.querySelector('.popup_type_confirm-deletion'));
         cardDataForDeletion = cardData;
         eventForDeletion = event;
     });
     cardLikeButton.addEventListener('click', (event) => {
-        toggleLikeCard(event);
         if (!hasMyLike) {
             putLike(cardData)
                 .then((res) => {
+                    toggleLikeCard(event);
                     cardLikesNumber.textContent = res.likes.length
                     hasMyLike = true;
                 })
@@ -44,6 +41,7 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
         } else {
             deleteLike(cardData)
                 .then((res) => {
+                    toggleLikeCard(event);
                     cardLikesNumber.textContent = res.likes.length;
                     hasMyLike = false;
                 })
@@ -51,7 +49,6 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
         }
     });
     cardImage.addEventListener('click', () => openImagePopup(cardImage.src, cardImage.alt));
-    
     return placeElement;
 }
 

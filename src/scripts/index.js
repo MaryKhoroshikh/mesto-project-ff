@@ -1,11 +1,14 @@
+import '../pages/index.css'
 import { createCard, deleteCard, toggleLikeCard, cardDataForDeletion, eventForDeletion} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
-import '../pages/index.css'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
-import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, checkURL } from './api.js'
-
+import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard } from './api.js'
 
 export const ownerID = "51e16379f74f19a5d50fc63e";
+const textDefaultSave = 'Сохранить';
+const textDefaultDelete = 'Да';
+const textSaving = 'Сохранение...';
+const textDeletion = 'Удаление...';
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
@@ -41,50 +44,55 @@ const linkInput = formAddCard.elements.link;
 
 function handleEditProfile(event) {
     event.preventDefault();
-    renderSaving(true, formEditProfile);
-    profileTitle.textContent = nameInput.value;
-    profileDescription.textContent = jobInput.value;
+    renderLoading(true, formEditProfile, textSaving, textDefaultSave);
     patchProfile(nameInput,jobInput)
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
-        .finally(() => renderSaving(false, formEditProfile));
-    closeModal(modalEditProfile);
+        .finally(() => {
+            profileTitle.textContent = nameInput.value;
+            profileDescription.textContent = jobInput.value;
+            renderLoading(false, formEditProfile, textSaving, textDefaultSave);
+            closeModal(modalEditProfile);  
+        });
 }
 
 function handleAddCard(event) {
     event.preventDefault();
-    renderSaving(true, formAddCard);
-    const elem = {name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}};
-    postCard(elem)
+    renderLoading(true, formAddCard, textSaving, textDefaultSave);
+    postCard({name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}})
         .then((res) => {
             placesContainer.prepend(createCard(res, deleteCard, toggleLikeCard, openImagePopup, ownerID));
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
-        .finally(() => renderSaving(false, formAddCard));
-    closeModal(modalAddCard);
-    formAddCard.reset();
+        .finally(() => {
+            closeModal(modalAddCard);
+            renderLoading(false, formAddCard, textSaving, textDefaultSave);
+            formAddCard.reset();
+        });
 }
 
 function handleEditAvatar(event) {
     event.preventDefault();
-    renderSaving(true, formEditAvatar);
-    profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
-    //проверим ссылку 
-    //checkURL(avatarInput.value).catch((err) => console.log(`Произошла ошибка: ${err}`));
+    renderLoading(true, formEditAvatar, textSaving, textDefaultSave);
     patchAvatar(avatarInput)
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
-        .finally(() => renderSaving(false, formEditAvatar));
-    closeModal(modalEditAvatar);
+        .finally(() => {
+            profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
+            closeModal(modalEditAvatar);
+            renderLoading(false, formEditAvatar, textSaving, textDefaultSave);
+            formEditAvatar.reset();
+        });
 }
 
 function handleConfirmDeletion(event) {
     event.preventDefault();
-    renderSaving(true, formConfirmDeletion);
-    console.log('deletion');
-    deleteCard(eventForDeletion);
+    renderLoading(true, formConfirmDeletion, textDeletion, textDefaultDelete);
     deleteFromServerCard(cardDataForDeletion)
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
-        .finally(() => renderSaving(false, formEditAvatar));
-    closeModal(modalConfirmDeletion);
+        .finally(() => {
+            deleteCard(eventForDeletion);
+            closeModal(modalConfirmDeletion);
+            renderLoading(false, formConfirmDeletion, textDeletion, textDefaultDelete);
+        });
 }
 
 function openImagePopup (src, alt) {
@@ -93,13 +101,13 @@ function openImagePopup (src, alt) {
     openModal(modalBigImage);
 }
 
-function renderSaving (isSaving, form) {
-    if (isSaving) {
-        form.querySelector('.popup__button').textContent = 'Сохранение...';
+function renderLoading (isLoading, form, textLoading, textDefault) {
+    if (isLoading) {
+        form.querySelector('.popup__button').textContent = textLoading;
     } else {
-        form.querySelector('.popup__button').textContent = 'Сохранить';
+        form.querySelector('.popup__button').textContent = textDefault;
     }
-  }
+}
 
 Promise.all([getInitialCards, getProfile]).then(() => {
     getProfile()
@@ -109,7 +117,6 @@ Promise.all([getInitialCards, getProfile]).then(() => {
             profileImage.style.backgroundImage = `url("${result.avatar}")`;
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`));
-
     getInitialCards()
         .then((array) => {
             array.forEach(function (elem) { 
