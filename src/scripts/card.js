@@ -1,8 +1,6 @@
 import { openModal } from './modal.js'
 import { putLike, deleteLike } from './api.js'
-
-var cardIDForDeletion;
-var eventForDeletion;
+import { deleteCardCallback } from './index.js'
 
 function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerID) {
     const placeTemplate = document.querySelector('#card-template').content;
@@ -13,6 +11,7 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
     const cardLikesNumber = placeElement.querySelector('.card__number-of-likes');
     const titleValue = cardData.name;
     let hasMyLike = cardData.likes.some((elem) => elem._id === ownerID);
+    const cardID = cardData._id;
     cardLikesNumber.textContent = cardData.likes.length;
     cardImage.src = cardData.link;
     cardImage.alt = titleValue;
@@ -24,32 +23,20 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
     if (hasMyLike) {
         cardLikeButton.classList.toggle('card__like-button_is-active');
     }
-    cardDeleteButton.addEventListener('click', (event) => {
-        openModal(document.querySelector('.popup_type_confirm-deletion'));
-        cardIDForDeletion = cardData._id;
-        eventForDeletion = event;
-    });
-    cardLikeButton.addEventListener('click', (event) => {
-        if (!hasMyLike) {
-            putLike(cardData._id)
-                .then((res) => {
-                    toggleLikeCard(event);
-                    cardLikesNumber.textContent = res.likes.length
-                    hasMyLike = true;
-                })
-                .catch((err) => console.log(`Произошла ошибка: ${err}`));
-        } else {
-            deleteLike(cardData._id)
-                .then((res) => {
-                    toggleLikeCard(event);
-                    cardLikesNumber.textContent = res.likes.length;
-                    hasMyLike = false;
-                })
-                .catch((err) => console.log(`Произошла ошибка: ${err}`));
-        }
-    });
+    cardDeleteButton.addEventListener('click', (event) => deleteCardCallback(event, cardID));
+    cardLikeButton.addEventListener('click', (event) => likeToggleCallback(event.target, cardID, cardLikesNumber));
     cardImage.addEventListener('click', () => openImagePopup(cardImage.src, cardImage.alt));
     return placeElement;
+}
+
+const likeToggleCallback = (buttonLikeClicked, cardID, cardLikesNumber) => {
+    const toggleLikeMethod = buttonLikeClicked.classList.contains('card__like-button_is-active') ? deleteLike : putLike;
+    toggleLikeMethod(cardID).
+        then((res) => {
+            toggleLikeCard(buttonLikeClicked);
+            cardLikesNumber.textContent = res.likes.length;
+        })
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
 }
 
 function deleteCard (event) {
@@ -57,7 +44,7 @@ function deleteCard (event) {
 }
 
 function toggleLikeCard (event) {
-    event.target.classList.toggle('card__like-button_is-active');
+    event.classList.toggle('card__like-button_is-active');
 }
 
-export { createCard, deleteCard, toggleLikeCard, cardIDForDeletion, eventForDeletion }
+export { createCard, deleteCard, toggleLikeCard }

@@ -1,5 +1,5 @@
 import '../pages/index.css'
-import { createCard, deleteCard, toggleLikeCard, cardIDForDeletion, eventForDeletion} from './card.js'
+import { createCard, deleteCard, toggleLikeCard} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
 import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard } from './api.js'
@@ -9,6 +9,9 @@ const textDefaultSave = 'Сохранить';
 const textDefaultDelete = 'Да';
 const textSaving = 'Сохранение...';
 const textDeletion = 'Удаление...';
+
+let cardIDForDeletion;
+let eventForDeletion;
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
@@ -41,6 +44,12 @@ const jobInput = formEditProfile.elements.description;
 const formAddCard = document.forms.new_place;
 const place_nameInput = formAddCard.elements.place_name;
 const linkInput = formAddCard.elements.link;
+
+export const deleteCardCallback = (event, cardID) => {
+    openModal(document.querySelector('.popup_type_confirm-deletion'));
+    cardIDForDeletion = cardID;
+    eventForDeletion = event;
+}
 
 function handleEditProfile(event) {
     event.preventDefault();
