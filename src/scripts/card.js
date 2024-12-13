@@ -1,7 +1,7 @@
 import { openModal } from './modal.js'
 import { putLike, deleteLike } from './api.js'
 
-var cardDataForDeletion;
+var cardIDForDeletion;
 var eventForDeletion;
 
 function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerID) {
@@ -26,12 +26,12 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
     }
     cardDeleteButton.addEventListener('click', (event) => {
         openModal(document.querySelector('.popup_type_confirm-deletion'));
-        cardDataForDeletion = cardData;
+        cardIDForDeletion = cardData._id;
         eventForDeletion = event;
     });
     cardLikeButton.addEventListener('click', (event) => {
         if (!hasMyLike) {
-            putLike(cardData)
+            putLike(cardData._id)
                 .then((res) => {
                     toggleLikeCard(event);
                     cardLikesNumber.textContent = res.likes.length
@@ -39,7 +39,7 @@ function createCard(cardData, deleteCard, toggleLikeCard, openImagePopup, ownerI
                 })
                 .catch((err) => console.log(`Произошла ошибка: ${err}`));
         } else {
-            deleteLike(cardData)
+            deleteLike(cardData._id)
                 .then((res) => {
                     toggleLikeCard(event);
                     cardLikesNumber.textContent = res.likes.length;
@@ -60,4 +60,4 @@ function toggleLikeCard (event) {
     event.target.classList.toggle('card__like-button_is-active');
 }
 
-export { createCard, deleteCard, toggleLikeCard, cardDataForDeletion, eventForDeletion }
+export { createCard, deleteCard, toggleLikeCard, cardIDForDeletion, eventForDeletion }

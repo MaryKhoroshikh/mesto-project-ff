@@ -1,5 +1,5 @@
 import '../pages/index.css'
-import { createCard, deleteCard, toggleLikeCard, cardDataForDeletion, eventForDeletion} from './card.js'
+import { createCard, deleteCard, toggleLikeCard, cardIDForDeletion, eventForDeletion} from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
 import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard } from './api.js'
@@ -45,7 +45,7 @@ const linkInput = formAddCard.elements.link;
 function handleEditProfile(event) {
     event.preventDefault();
     renderLoading(true, formEditProfile, textSaving, textDefaultSave);
-    patchProfile(nameInput,jobInput)
+    patchProfile({name: nameInput.value, about: jobInput.value})
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => {
             profileTitle.textContent = nameInput.value;
@@ -73,7 +73,7 @@ function handleAddCard(event) {
 function handleEditAvatar(event) {
     event.preventDefault();
     renderLoading(true, formEditAvatar, textSaving, textDefaultSave);
-    patchAvatar(avatarInput)
+    patchAvatar({avatar: avatarInput.value})
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => {
             profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
@@ -86,7 +86,7 @@ function handleEditAvatar(event) {
 function handleConfirmDeletion(event) {
     event.preventDefault();
     renderLoading(true, formConfirmDeletion, textDeletion, textDefaultDelete);
-    deleteFromServerCard(cardDataForDeletion)
+    deleteFromServerCard(cardIDForDeletion)
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => {
             deleteCard(eventForDeletion);

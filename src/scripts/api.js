@@ -6,116 +6,75 @@ const config = {
     }
 }
 
+const handleResponse = (res) => {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
 const getInitialCards = () => {
     return fetch(`${config.baseUrl}/cards`, {
       headers: config.headers
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-      });
+      .then(handleResponse);
 }
 
 const getProfile = () => {
     return fetch(`${config.baseUrl}/users/me`, {
       headers: config.headers
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-      });
+      .then(handleResponse);
 }
 
 const postCard = (newCard) => {
     return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: config.headers,
-        body: JSON.stringify({
-            name: newCard.name,
-            link: newCard.link
-        })
-    }).then((res) => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    });
+        body: JSON.stringify(newCard)
+    }).then(handleResponse);
 }
 
-const patchProfile = (nameInput, jobInput) => {
+const patchProfile = (newProfile) => {
   return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: config.headers,
-    body: JSON.stringify({
-      name: nameInput.value,
-      about: jobInput.value
-    })
+    body: JSON.stringify(newProfile)
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse)
 }
 
-const patchAvatar = (avatarInput) => {
+const patchAvatar = (newAvatar) => {
   return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     headers: config.headers,
-    body: JSON.stringify({
-      avatar: avatarInput.value
-    })
+    body: JSON.stringify(newAvatar)
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse)
 }
 
-const deleteFromServerCard = (cardData) => {
-  return fetch(`${config.baseUrl}/cards/${cardData._id}`, {
+const deleteFromServerCard = (cardID) => {
+  return fetch(`${config.baseUrl}/cards/${cardID}`, {
     method: 'DELETE',
     headers: config.headers,
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse)
 }
 
-const putLike = (cardData) => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardData._id}`, {
+const putLike = (cardID) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardID}`, {
     method: 'PUT',
     headers: config.headers,
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse)
 }
 
-const deleteLike = (cardData) => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardData._id}`, {
+const deleteLike = (cardID) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardID}`, {
     method: 'DELETE',
     headers: config.headers,
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse)
 }
 
 export { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, putLike, deleteLike }
