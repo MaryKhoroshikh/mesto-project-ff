@@ -1,17 +1,26 @@
 import '../pages/index.css'
 import { createCard, deleteCard, toggleLikeCard } from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
-import { enableValidation, clearValidation, validationConfig } from './validation.js'
+import { enableValidation, clearValidation } from './validation.js'
 import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, putLike, deleteLike } from './api.js'
+
+let cardIDForDeletion;
+let eventForDeletion;
+let ownerID;
 
 const textDefaultSave = 'Сохранить';
 const textDefaultDelete = 'Да';
 const textSaving = 'Сохранение...';
 const textDeletion = 'Удаление...';
 
-let cardIDForDeletion;
-let eventForDeletion;
-let ownerID;
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_inactive',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__input-error_active'
+};
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
