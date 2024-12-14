@@ -1,10 +1,9 @@
 import '../pages/index.css'
-import { createCard, deleteCard, toggleLikeCard} from './card.js'
+import { createCard, deleteCard, toggleLikeCard } from './card.js'
 import { openModal, closeModal, closeWithOverlay } from './modal.js'
 import { enableValidation, clearValidation, validationConfig } from './validation.js'
-import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard } from './api.js'
+import { getInitialCards, getProfile, postCard, patchProfile, patchAvatar, deleteFromServerCard, putLike, deleteLike } from './api.js'
 
-export const ownerID = "51e16379f74f19a5d50fc63e";
 const textDefaultSave = 'Сохранить';
 const textDefaultDelete = 'Да';
 const textSaving = 'Сохранение...';
@@ -12,11 +11,11 @@ const textDeletion = 'Удаление...';
 
 let cardIDForDeletion;
 let eventForDeletion;
+let ownerID;
 
 const container = document.querySelector('.content');
 const sectionPlaces = container.querySelector('.places');
 const placesContainer = sectionPlaces.querySelector('.places__list');
-
 const sectionProfile= container.querySelector('.profile');
 const profileTitle = sectionProfile.querySelector('.profile__title');
 const profileDescription = sectionProfile.querySelector('.profile__description');
@@ -33,43 +32,52 @@ const modalEditAvatar = document.querySelector('.popup_type_avatar');
 const modalConfirmDeletion = document.querySelector('.popup_type_confirm-deletion');
 
 const formConfirmDeletion = document.forms.confirm_deletion;
-
 const formEditAvatar = document.forms.edit_avatar;
 const avatarInput = formEditAvatar.elements.avatar;
-
 const formEditProfile = document.forms.edit_profile;
 const nameInput = formEditProfile.elements.name;
 const jobInput = formEditProfile.elements.description;
-
 const formAddCard = document.forms.new_place;
-const place_nameInput = formAddCard.elements.place_name;
+const placeNameInput = formAddCard.elements.place_name;
 const linkInput = formAddCard.elements.link;
 
-export const deleteCardCallback = (event, cardID) => {
+const deleteCardCallback = (event, cardID) => {
     openModal(document.querySelector('.popup_type_confirm-deletion'));
     cardIDForDeletion = cardID;
     eventForDeletion = event;
+}
+
+const likeToggleCallback = (buttonLikeClicked, cardID, cardLikesNumber) => {
+    const toggleLikeMethod = buttonLikeClicked.classList.contains('card__like-button_is-active') ? deleteLike : putLike;
+    toggleLikeMethod(cardID).
+        then((res) => {
+            toggleLikeCard(buttonLikeClicked);
+            cardLikesNumber.textContent = res.likes.length;
+        })
+        .catch((err) => console.log(`Произошла ошибка: ${err}`));
 }
 
 function handleEditProfile(event) {
     event.preventDefault();
     renderLoading(true, formEditProfile, textSaving, textDefaultSave);
     patchProfile({name: nameInput.value, about: jobInput.value})
+        .then((res) => {
+            profileTitle.textContent = res.name;
+            profileDescription.textContent = res.about;
+        })
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => {
-            profileTitle.textContent = nameInput.value;
-            profileDescription.textContent = jobInput.value;
+            closeModal(modalEditProfile);
             renderLoading(false, formEditProfile, textSaving, textDefaultSave);
-            closeModal(modalEditProfile);  
         });
 }
 
 function handleAddCard(event) {
     event.preventDefault();
     renderLoading(true, formAddCard, textSaving, textDefaultSave);
-    postCard({name: place_nameInput.value, link: linkInput.value, owner: {_id: ownerID}})
+    postCard({name: placeNameInput.value, link: linkInput.value})
         .then((res) => {
-            placesContainer.prepend(createCard(res, deleteCard, toggleLikeCard, openImagePopup, ownerID));
+            placesContainer.prepend(createCard(res, deleteCardCallback, likeToggleCallback, openImagePopup, ownerID));
         })
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => {
@@ -83,9 +91,11 @@ function handleEditAvatar(event) {
     event.preventDefault();
     renderLoading(true, formEditAvatar, textSaving, textDefaultSave);
     patchAvatar({avatar: avatarInput.value})
+        .then((res) => {
+            profileImage.style.backgroundImage = `url("${res.avatar}")`;
+        })
         .catch((err) => console.log(`Произошла ошибка: ${err}`))
         .finally(() => {
-            profileImage.style.backgroundImage = `url("${avatarInput.value}")`;
             closeModal(modalEditAvatar);
             renderLoading(false, formEditAvatar, textSaving, textDefaultSave);
             formEditAvatar.reset();
@@ -96,9 +106,12 @@ function handleConfirmDeletion(event) {
     event.preventDefault();
     renderLoading(true, formConfirmDeletion, textDeletion, textDefaultDelete);
     deleteFromServerCard(cardIDForDeletion)
-        .catch((err) => console.log(`Произошла ошибка: ${err}`))
-        .finally(() => {
+        .then((res) => {
             deleteCard(eventForDeletion);
+            console.log(res);
+        })
+        .catch((err) => console.log(`Произошла ошибка: ${err}`))
+        .finally(() => {   
             closeModal(modalConfirmDeletion);
             renderLoading(false, formConfirmDeletion, textDeletion, textDefaultDelete);
         });
@@ -111,34 +124,21 @@ function openImagePopup (src, alt) {
 }
 
 function renderLoading (isLoading, form, textLoading, textDefault) {
-    if (isLoading) {
-        form.querySelector('.popup__button').textContent = textLoading;
-    } else {
-        form.querySelector('.popup__button').textContent = textDefault;
-    }
+    form.querySelector('.popup__button').textContent = isLoading ? textLoading : textDefault;
 }
 
-Promise.all([getInitialCards, getProfile]).then(() => {
-    getProfile()
-        .then((result) => {
-            profileTitle.textContent = result.name;
-            profileDescription.textContent = result.about;
-            profileImage.style.backgroundImage = `url("${result.avatar}")`;
-        })
-        .catch((err) => console.log(`Произошла ошибка: ${err}`));
-    getInitialCards()
-        .then((array) => {
-            array.forEach(function (elem) { 
-                placesContainer.append(createCard(elem, deleteCard, toggleLikeCard, openImagePopup, ownerID));
-            });
-        })
-        .catch((err) => console.log(`Произошла ошибка: ${err}`));
+Promise.all([getInitialCards(), getProfile()]).then(([cardsData, profileData]) => {
+    profileTitle.textContent = profileData.name;
+    profileDescription.textContent = profileData.about;
+    profileImage.style.backgroundImage = `url("${profileData.avatar}")`;
+    ownerID = profileData._id;
+    cardsData.forEach(function (elem) { 
+        placesContainer.append(createCard(elem, deleteCardCallback, likeToggleCallback, openImagePopup, ownerID));
+    });
 });
 
-//валидация форм
 enableValidation(validationConfig);
 
-//слушатели
 buttonEditProfile.addEventListener('click', () => {
     clearValidation(formEditProfile, validationConfig);
     nameInput.value = profileTitle.textContent;
@@ -161,13 +161,7 @@ formEditProfile.addEventListener('submit', handleEditProfile);
 formEditAvatar.addEventListener('submit', handleEditAvatar);
 formConfirmDeletion.addEventListener('submit', handleConfirmDeletion);
 
-modalBigImage.querySelector('.popup__close').addEventListener('click', () => closeModal(modalBigImage));
-modalAddCard.querySelector('.popup__close').addEventListener('click', () => closeModal(modalAddCard));
-modalEditProfile.querySelector('.popup__close').addEventListener('click', () => closeModal(modalEditProfile));
-modalEditAvatar.querySelector('.popup__close').addEventListener('click', () => closeModal(modalEditAvatar));
-modalConfirmDeletion.querySelector('.popup__close').addEventListener('click', () => closeModal(modalConfirmDeletion));
-modalBigImage.addEventListener('click', closeWithOverlay);
-modalAddCard.addEventListener('click', closeWithOverlay);
-modalEditProfile.addEventListener('click', closeWithOverlay);
-modalEditAvatar.addEventListener('click', closeWithOverlay);
-modalConfirmDeletion.addEventListener('click', closeWithOverlay);
+[modalBigImage, modalAddCard, modalEditProfile, modalEditAvatar, modalConfirmDeletion].forEach(modal => {
+    modal.querySelector('.popup__close').addEventListener('click', () => closeModal(modal));
+    modal.addEventListener('click', closeWithOverlay);
+});
